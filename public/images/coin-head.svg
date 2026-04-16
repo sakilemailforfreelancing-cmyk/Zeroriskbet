@@ -1,0 +1,14 @@
+<svg width="420" height="420" viewBox="0 0 420 420" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Coin head side">
+  <defs>
+    <radialGradient id="gold" cx="32%" cy="28%" r="70%">
+      <stop offset="0%" stop-color="#fff2df" />
+      <stop offset="48%" stop-color="#fcbf81" />
+      <stop offset="100%" stop-color="#cb6b25" />
+    </radialGradient>
+  </defs>
+  <circle cx="210" cy="210" r="190" fill="url(#gold)" />
+  <circle cx="210" cy="210" r="162" fill="none" stroke="#ffe0bf" stroke-width="14" />
+  <path d="M210 116a56 56 0 1 1-0.1 112 56 56 0 0 1 0.1-112z" fill="#8b4319" opacity="0.24" />
+  <path d="M136 300c14-34 44-54 74-54s60 20 74 54" stroke="#8b4319" stroke-width="16" stroke-linecap="round" fill="none" opacity="0.3" />
+  <text x="210" y="230" text-anchor="middle" dominant-baseline="middle" fill="#723610" font-size="62" font-weight="900" font-family="Arial, Helvetica, sans-serif">HEAD</text>
+</svg>

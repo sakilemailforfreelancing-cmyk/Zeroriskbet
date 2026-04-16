@@ -1,0 +1,33 @@
+<svg width="640" height="420" viewBox="0 0 640 420" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Coin flip thumbnail">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#13101f" />
+      <stop offset="100%" stop-color="#090d19" />
+    </linearGradient>
+    <radialGradient id="coin" cx="40%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#fff0d8" />
+      <stop offset="55%" stop-color="#fcb46f" />
+      <stop offset="100%" stop-color="#cc6d2c" />
+    </radialGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="5" result="b" />
+      <feMerge>
+        <feMergeNode in="b" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+  </defs>
+  <rect width="640" height="420" rx="22" fill="url(#bg)" />
+  <g opacity="0.15">
+    <path d="M0 380L640 30" stroke="#fff" />
+    <path d="M0 320L640 -30" stroke="#fff" />
+    <path d="M0 420L640 70" stroke="#fff" />
+  </g>
+  <circle cx="440" cy="210" r="120" fill="url(#coin)" filter="url(#glow)" />
+  <circle cx="440" cy="210" r="101" fill="none" stroke="#ffe0bb" stroke-width="6" opacity="0.8" />
+  <text x="440" y="222" text-anchor="middle" fill="#6f3314" font-size="46" font-weight="900" font-family="Arial, Helvetica, sans-serif">HEAD</text>
+  <text x="36" y="84" fill="#ffe2c8" font-size="46" font-weight="900" font-family="Arial, Helvetica, sans-serif">COIN FLIP</text>
+  <text x="36" y="128" fill="#fca264" font-size="25" font-weight="700" font-family="Arial, Helvetica, sans-serif">HEADS OR TAILS � WIN 2x</text>
+  <rect x="36" y="294" width="176" height="64" rx="15" fill="#fca264" />
+  <text x="124" y="336" text-anchor="middle" fill="#2b1709" font-size="30" font-weight="900" font-family="Arial, Helvetica, sans-serif">FLIP</text>
+</svg>
