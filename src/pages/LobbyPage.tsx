@@ -29,7 +29,7 @@ const games = [
     hot: true,
     theme: 'linear-gradient(145deg, #3a0c20, #c0471f)',
     thumbnail: '/images/spin-hot-thumb.svg',
-    route: '/games/slots',
+    route: '/games/spin-wheel',
     cta: 'Play Spin',
   },
   {

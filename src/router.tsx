@@ -6,6 +6,7 @@ import { WalletPage } from './pages/WalletPage'
 import { ProfilePage } from './pages/ProfilePage'
 import { GamePage } from './pages/GamePage'
 import { SlotMachinePage } from './pages/SlotMachinePage'
+import { PremiumSlotsPage } from './pages/PremiumSlotsPage'
 import { BettingPassPage, PromotionPage, RecommendationsPage, RewardsPage } from './pages/HomeTabPages'
 import { DiceGamePage } from './pages/DiceGamePage'
 import { CrashGamePage } from './pages/CrashGamePage'
@@ -31,10 +32,18 @@ export function AppRoutes() {
       <Route path="/betting-pass" element={<BettingPassPage />} />
       <Route path="/rewards" element={<RewardsPage />} />
       <Route
-        path="/games/slots"
+        path="/games/spin-wheel"
         element={
           <ProtectedRoute>
             <SlotMachinePage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/games/slots"
+        element={
+          <ProtectedRoute>
+            <PremiumSlotsPage />
           </ProtectedRoute>
         }
       />
