@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { clientApi } from '../api/clientApi'
 import { ResultPopup } from '../components/slots/ResultPopup'
@@ -41,6 +41,82 @@ function createFinalGrid(win: boolean): { grid: string[][]; winningRow: number |
   return { grid, winningRow, winnerSymbol }
 }
 
+function useSlotSounds() {
+  const ctxRef = useRef<AudioContext | null>(null)
+  const spinOscRef = useRef<OscillatorNode | null>(null)
+  const spinGainRef = useRef<GainNode | null>(null)
+
+  function ensureCtx(): AudioContext | null {
+    if (ctxRef.current) return ctxRef.current
+    const Ctx =
+      window.AudioContext ||
+      (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext
+    if (!Ctx) return null
+    ctxRef.current = new Ctx()
+    return ctxRef.current
+  }
+
+  function pulse(type: OscillatorType, from: number, to: number, durationMs: number, peak = 0.05) {
+    const ctx = ensureCtx()
+    if (!ctx) return
+    const osc = ctx.createOscillator()
+    const gain = ctx.createGain()
+    osc.type = type
+    osc.frequency.value = from
+    gain.gain.value = 0.0001
+    osc.connect(gain)
+    gain.connect(ctx.destination)
+    gain.gain.exponentialRampToValueAtTime(peak, ctx.currentTime + 0.01)
+    osc.frequency.exponentialRampToValueAtTime(Math.max(20, to), ctx.currentTime + durationMs / 1000)
+    gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + durationMs / 1000)
+    osc.start()
+    osc.stop(ctx.currentTime + durationMs / 1000 + 0.02)
+  }
+
+  function startSpinLoop() {
+    stopSpinLoop()
+    const ctx = ensureCtx()
+    if (!ctx) return
+    const osc = ctx.createOscillator()
+    const gain = ctx.createGain()
+    osc.type = 'sawtooth'
+    osc.frequency.value = 145
+    gain.gain.value = 0.0001
+    osc.connect(gain)
+    gain.connect(ctx.destination)
+    gain.gain.exponentialRampToValueAtTime(0.028, ctx.currentTime + 0.08)
+    osc.start()
+    spinOscRef.current = osc
+    spinGainRef.current = gain
+  }
+
+  function stopSpinLoop() {
+    const osc = spinOscRef.current
+    const gain = spinGainRef.current
+    if (osc && gain) {
+      gain.gain.exponentialRampToValueAtTime(0.0001, osc.context.currentTime + 0.06)
+      osc.stop(osc.context.currentTime + 0.08)
+    }
+    spinOscRef.current = null
+    spinGainRef.current = null
+  }
+
+  return {
+    startSpinLoop,
+    stopSpinLoop,
+    reelStopClick() {
+      pulse('square', 980, 640, 55, 0.036)
+    },
+    win() {
+      pulse('triangle', 520, 920, 200, 0.055)
+      window.setTimeout(() => pulse('triangle', 760, 1260, 180, 0.052), 90)
+    },
+    lose() {
+      pulse('sawtooth', 250, 120, 260, 0.048)
+    },
+  }
+}
+
 export function PremiumSlotsPage() {
   const navigate = useNavigate()
   const token = useSessionStore((s) => s.token)
@@ -48,6 +124,7 @@ export function PremiumSlotsPage() {
   const balance = useSessionStore((s) => s.balance)
   const setBalance = useSessionStore((s) => s.setBalance)
   const numericUserId = userId ? Number(userId) : NaN
+  const sounds = useSlotSounds()
 
   const [grid, setGrid] = useState<string[][]>(() => createRandomGrid())
   const [spinningColumns, setSpinningColumns] = useState<boolean[]>(() => Array(COLUMN_COUNT).fill(false))
@@ -63,6 +140,12 @@ export function PremiumSlotsPage() {
   const [resultLabel, setResultLabel] = useState<string>('')
 
   const betText = useMemo(() => formatCoinCompact(bet), [bet])
+
+  useEffect(() => {
+    return () => {
+      sounds.stopSpinLoop()
+    }
+  }, [sounds])
 
   const onSpin = async () => {
     if (busy) return
@@ -90,16 +173,19 @@ export function PremiumSlotsPage() {
       })
 
       setSpinningColumns(Array(COLUMN_COUNT).fill(true))
+      sounds.startSpinLoop()
       const willWin = Math.random() < 0.33
       const final = createFinalGrid(willWin)
 
       for (let i = 0; i < COLUMN_COUNT; i += 1) {
         window.setTimeout(() => {
           setSpinningColumns((prev) => prev.map((v, idx) => (idx === i ? false : v)))
+          sounds.reelStopClick()
         }, 420 + i * 180)
       }
 
       await delay(420 + COLUMN_COUNT * 180 + 60)
+      sounds.stopSpinLoop()
       setGrid(final.grid)
       setWinningRow(final.winningRow)
 
@@ -116,12 +202,14 @@ export function PremiumSlotsPage() {
         setResultWin(true)
         setResultAmount(payout)
         setResultLabel(final.winnerSymbol)
+        sounds.win()
       } else {
         setLastWin(0)
         setResultWin(false)
         setResultAmount(0)
         setLoseFx(true)
         window.setTimeout(() => setLoseFx(false), 320)
+        sounds.lose()
       }
 
       const coin = await clientApi.getTotalCoin()
@@ -129,6 +217,7 @@ export function PremiumSlotsPage() {
       setShowResult(true)
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Spin failed.')
+      sounds.stopSpinLoop()
     } finally {
       setBusy(false)
     }
