@@ -12,6 +12,8 @@ import { DiceGamePage } from './pages/DiceGamePage'
 import { CrashGamePage } from './pages/CrashGamePage'
 import { LuckyBoxPage } from './pages/LuckyBoxPage'
 import { CoinFlipPage } from './pages/CoinFlipPage'
+import { Lucky7Page } from './pages/Lucky7Page'
+import { MinesGamePage } from './pages/MinesGamePage'
 import { useSessionStore } from './store/useSessionStore'
 
 function ProtectedRoute({ children }: { children: ReactNode }) {
@@ -76,6 +78,22 @@ export function AppRoutes() {
         element={
           <ProtectedRoute>
             <CoinFlipPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/games/lucky7"
+        element={
+          <ProtectedRoute>
+            <Lucky7Page />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/games/mines"
+        element={
+          <ProtectedRoute>
+            <MinesGamePage />
           </ProtectedRoute>
         }
       />
